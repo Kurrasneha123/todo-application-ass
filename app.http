@@ -18,7 +18,7 @@ GET  http://localhost:3000/todos/2/
 ###
 GET  http://localhost:3000/agenda/?date=2020-12-22
 ###
-POST  http://localhost:3000/todos/2/
+POST  http://localhost:3000/todos/6/
 Content-Type:application/json
 {
   "id": 6,

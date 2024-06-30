@@ -163,7 +163,12 @@ const checkRequestBody = (request, response, next) => {
 }
 //API 1
 app.get('/todos/', checkRequestQueries, async (request, response) => {
-  const {status = '', search_q = '', priority = '', category = ''} = request
+  const {
+    status = '',
+    search_q = '',
+    priority = '',
+    category = '',
+  } = request.query
   console.log(status, search_q, priority, category)
   const getTodoQuery = `
      SELECT 
@@ -174,7 +179,12 @@ app.get('/todos/', checkRequestQueries, async (request, response) => {
        todo LIKE '%${search_q}%' AND priority LIKE '%${priority}%'
        AND status LIKE '%${status}%' AND category LIKE '%${category}%'`
   const todosArray = await db.all(getTodoQuery)
-  response.send(todosArray)
+  if (todosArray === undefined) {
+    response.status(400)
+    response.send('Invalid Todo Category')
+  } else {
+    response.send(todosArray)
+  }
 })
 //API 2
 app.get('/todos/:todoId/', checkRequestQueries, async (request, response) => {
@@ -196,8 +206,8 @@ app.get('/todos/:todoId/', checkRequestQueries, async (request, response) => {
 })
 //API 3
 app.get('/agenda/', checkRequestQueries, async (request, response) => {
-  const {date} = request
-  console.log(date, 'a')
+  const {date} = request.query
+  const formateDate = format(new Date(date), 'yyyy-MM-dd')
 
   const selectDueDateQuery = `
    SELECT
@@ -210,7 +220,7 @@ app.get('/agenda/', checkRequestQueries, async (request, response) => {
    FROM 
      todo 
    WHERE 
-     due_date = '${date}'`
+     due_date = '${formateDate}'`
   const todosArray = await db.all(selectDueDateQuery)
   if (todosArray === undefined) {
     response.status(400)
@@ -287,7 +297,7 @@ app.put('/todos/:todoId/', checkRequestBody, async (request, response) => {
         WHERE
           id = ${todoId}`
       await db.run(updateCategoryQuery)
-      response.send('Category Updatetd')
+      response.send('Category Updated')
       break
     case dueDate !== undefined:
       updateDuedateQuery = `
