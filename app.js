@@ -250,8 +250,13 @@ app.post('/todos/', checkRequestBody, async (request, response) => {
 })
 //API 5
 app.put('/todos/:todoId/', checkRequestBody, async (request, response) => {
-  const {todoId} = request
-  const {priority, todo, status, category, dueDate} = request
+  const {
+    todo = previousTodo.todo,
+    priority = previousTodo.priority,
+    status = previousTodo.status,
+    category = previousTodo.category,
+    dueDate = previousTodo.dueDate,
+  } = request.body
   let updateTodoQuery = null
   console.log(priority, todo, status, category, dueDate)
   switch (true) {
